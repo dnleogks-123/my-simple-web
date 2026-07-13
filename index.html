@@ -2,65 +2,64 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>취향 저격 메뉴 추천기</title>
+    <title>오늘 뭐 먹지? 룰렛</title>
     <style>
-        body { text-align: center; font-family: 'Arial', sans-serif; padding: 20px; line-height: 1.6; }
-        select, button { padding: 10px; font-size: 1em; margin: 5px; cursor: pointer; }
-        #result { font-size: 2.5em; color: #d35400; margin: 30px; font-weight: bold; min-height: 1.5em; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 90%; max-width: 500px; text-align: center; }
+        .tag-container { margin: 20px 0; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        .tag { padding: 10px 20px; border-radius: 25px; border: 2px solid #e9ecef; background: #fff; cursor: pointer; transition: 0.3s; }
+        .tag.active { border-color: #27ae60; background: #e8f8f0; font-weight: bold; }
+        button { background-color: #27ae60; color: white; border: none; padding: 15px; width: 100%; border-radius: 15px; font-size: 1.2em; cursor: pointer; }
+        #result { font-size: 1.5em; padding: 30px; margin-top: 20px; background: #f8f9fa; border-radius: 20px; }
     </style>
 </head>
 <body>
-    <h1>오늘 뭐 먹지?</h1>
-    
-    <select id="category" onchange="updateSubOptions()">
-        <option value="식사">식사</option>
-        <option value="간식">간식</option>
-    </select>
+    <div class="container">
+        <h1>오늘 뭐 먹지? 🧐</h1>
+        <p>원하는 카테고리를 선택하고 '결과 보기'를 눌러주세요!</p>
+        
+        <div class="tag-container" id="tags">
+            <span class="tag" onclick="toggleTag(this)" data-type="한식">#한식 🍚</span>
+            <span class="tag" onclick="toggleTag(this)" data-type="중식">#중식 🥢</span>
+            <span class="tag" onclick="toggleTag(this)" data-type="일식">#일식 🍣</span>
+            <span class="tag" onclick="toggleTag(this)" data-type="양식">#양식 🍝</span>
+            <span class="tag" onclick="toggleTag(this)" data-type="과자류">#과자류 🍪</span>
+            <span class="tag" onclick="toggleTag(this)" data-type="빵류">#빵류 🍞</span>
+        </div>
 
-    <select id="subType">
-        </select>
-
-    <br>
-    <button onclick="pickFilteredMenu()">메뉴 뽑기</button>
-
-    <div id="result">메뉴를 선택해 보세요!</div>
+        <button onclick="rollRoulette()">결과 보기 룰렛! 🎡</button>
+        <div id="result">어떤 메뉴가 나올까요?</div>
+    </div>
 
     <script>
         const menuDB = [
-            { name: "김치찌개", cat: "식사", sub: "한식" }, { name: "제육볶음", cat: "식사", sub: "한식" },
-            { name: "짜장면", cat: "식사", sub: "중식" }, { name: "마라탕", cat: "식사", sub: "중식" },
-            { name: "돈까스", cat: "식사", sub: "일식" }, { name: "초밥", cat: "식사", sub: "일식" },
-            { name: "파스타", cat: "식사", sub: "양식" }, { name: "햄버거", cat: "식사", sub: "양식" },
-            { name: "감자칩", cat: "간식", sub: "과자류" }, { name: "새우깡", cat: "간식", sub: "과자류" },
-            { name: "단팥빵", cat: "간식", sub: "빵류" }, { name: "마카롱", cat: "간식", sub: "빵류" },
-            { name: "아이스크림", cat: "간식", sub: "빙과류" }, { name: "팥빙수", cat: "간식", sub: "빙과류" },
-            { name: "아메리카노", cat: "간식", sub: "음료류" }, { name: "밀크티", cat: "간식", sub: "음료류" }
+            { name: "김치찌개 🍲", type: "한식" }, { name: "제육볶음 🍱", type: "한식" },
+            { name: "짜장면 🍜", type: "중식" }, { name: "짬뽕 🌶️", type: "중식" },
+            { name: "초밥 🍣", type: "일식" }, { name: "라멘 🍥", type: "일식" },
+            { name: "파스타 🍝", type: "양식" }, { name: "햄버거 🍔", type: "양식" },
+            { name: "감자칩 🥔", type: "과자류" }, { name: "프레첼 🥨", type: "과자류" },
+            { name: "단팥빵 🥯", type: "빵류" }, { name: "마카롱 🧁", type: "빵류" }
         ];
 
-        function updateSubOptions() {
-            const cat = document.getElementById("category").value;
-            const subSelect = document.getElementById("subType");
-            subSelect.innerHTML = "";
+        function toggleTag(el) { el.classList.toggle('active'); }
+        
+        function rollRoulette() {
+            const activeTags = Array.from(document.querySelectorAll('.tag.active')).map(t => t.getAttribute('data-type'));
+            const resultDiv = document.getElementById("result");
+
+            if (activeTags.length === 0) {
+                resultDiv.innerText = "⚠️ 최소 하나 이상의 태그를 선택해주세요!";
+                return;
+            }
+
+            resultDiv.innerText = "🌀 룰렛 돌아가는 중...";
             
-            const options = cat === "식사" ? ["한식", "중식", "일식", "양식"] : ["과자류", "빵류", "빙과류", "음료류"];
-            options.forEach(opt => {
-                const el = document.createElement("option");
-                el.value = opt; el.textContent = opt;
-                subSelect.appendChild(el);
-            });
+            setTimeout(() => {
+                const filtered = menuDB.filter(m => activeTags.includes(m.type));
+                const random = filtered[Math.floor(Math.random() * filtered.length)];
+                resultDiv.innerHTML = `😋 <b>${random.name}</b>이(가) 나왔어요!`;
+            }, 1500); // 1.5초 대기
         }
-
-        function pickFilteredMenu() {
-            const cat = document.getElementById("category").value;
-            const sub = document.getElementById("subType").value;
-            const filtered = menuDB.filter(m => m.cat === cat && m.sub === sub);
-            document.getElementById("result").innerText = filtered.length > 0 
-                ? filtered[Math.floor(Math.random() * filtered.length)].name 
-                : "메뉴가 없습니다!";
-        }
-
-        // 초기화
-        updateSubOptions();
     </script>
 </body>
 </html>
