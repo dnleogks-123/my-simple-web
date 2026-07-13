@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>취향 저격 메뉴 추천기</title>
+    <style>
+        body { text-align: center; font-family: 'Arial', sans-serif; padding: 20px; line-height: 1.6; }
+        select, button { padding: 10px; font-size: 1em; margin: 5px; cursor: pointer; }
+        #result { font-size: 2.5em; color: #d35400; margin: 30px; font-weight: bold; min-height: 1.5em; }
+    </style>
+</head>
+<body>
+    <h1>오늘 뭐 먹지?</h1>
+    
+    <select id="category" onchange="updateSubOptions()">
+        <option value="식사">식사</option>
+        <option value="간식">간식</option>
+    </select>
+
+    <select id="subType">
+        </select>
+
+    <br>
+    <button onclick="pickFilteredMenu()">메뉴 뽑기</button>
+
+    <div id="result">메뉴를 선택해 보세요!</div>
+
+    <script>
+        const menuDB = [
+            { name: "김치찌개", cat: "식사", sub: "한식" }, { name: "제육볶음", cat: "식사", sub: "한식" },
+            { name: "짜장면", cat: "식사", sub: "중식" }, { name: "마라탕", cat: "식사", sub: "중식" },
+            { name: "돈까스", cat: "식사", sub: "일식" }, { name: "초밥", cat: "식사", sub: "일식" },
+            { name: "파스타", cat: "식사", sub: "양식" }, { name: "햄버거", cat: "식사", sub: "양식" },
+            { name: "감자칩", cat: "간식", sub: "과자류" }, { name: "새우깡", cat: "간식", sub: "과자류" },
+            { name: "단팥빵", cat: "간식", sub: "빵류" }, { name: "마카롱", cat: "간식", sub: "빵류" },
+            { name: "아이스크림", cat: "간식", sub: "빙과류" }, { name: "팥빙수", cat: "간식", sub: "빙과류" },
+            { name: "아메리카노", cat: "간식", sub: "음료류" }, { name: "밀크티", cat: "간식", sub: "음료류" }
+        ];
+
+        function updateSubOptions() {
+            const cat = document.getElementById("category").value;
+            const subSelect = document.getElementById("subType");
+            subSelect.innerHTML = "";
+            
+            const options = cat === "식사" ? ["한식", "중식", "일식", "양식"] : ["과자류", "빵류", "빙과류", "음료류"];
+            options.forEach(opt => {
+                const el = document.createElement("option");
+                el.value = opt; el.textContent = opt;
+                subSelect.appendChild(el);
+            });
+        }
+
+        function pickFilteredMenu() {
+            const cat = document.getElementById("category").value;
+            const sub = document.getElementById("subType").value;
+            const filtered = menuDB.filter(m => m.cat === cat && m.sub === sub);
+            document.getElementById("result").innerText = filtered.length > 0 
+                ? filtered[Math.floor(Math.random() * filtered.length)].name 
+                : "메뉴가 없습니다!";
+        }
+
+        // 초기화
+        updateSubOptions();
+    </script>
+</body>
+</html>
